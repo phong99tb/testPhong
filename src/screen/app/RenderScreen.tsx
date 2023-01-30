@@ -1,4 +1,4 @@
-import { View, Text, Image, Dimensions } from 'react-native'
+import { View, Text, Image, Dimensions, StatusBar } from 'react-native'
 import React from 'react'
 import styles from '../../asset/css'
 import { AntDesign } from '@expo/vector-icons';
@@ -14,8 +14,8 @@ const RenderScreen = ({ navigation, route }: any) => {
     return (
         <View style={styles().screen} >
             <View style={styles().container}>
-                <AntDesign name="left" size={24} color="black" style={{ marginTop: 50 }} onPress={() => navigation.pop()} />
-                <Image source={{ uri: route.params.result.assets[0].uri }} style={{ width: "100%", marginTop: 30, height:windowHeight - 230 }} />
+                <AntDesign name="left" size={24} color="black" style={{ marginTop: StatusBar.currentHeight }} onPress={() => navigation.pop()} />
+                <Image source={{ uri: route.params.result.assets[0].uri }} style={{ width: "100%", marginTop: 15, height:windowHeight - 230 }} />
                 <Text onPress={renderPic} style={{ alignSelf: "center", width: 152, height: 50, backgroundColor: "#3787EB", textAlign: "center", textAlignVertical: "center", borderRadius: 9, color: "white", marginTop: 10 }}>Render</Text>
                 <View style={styles().viewBanner}>
                     <BannerAd

@@ -41,8 +41,13 @@ const SelectOutput = ({ navigation, route }: any) => {
 	}
 
 	const noChoiseImg = (e: any) => {
-		const imgChoiseTem = arrChoise.filter((item:any) => !e.includes(item));
+		const imgChoiseTem = arrChoise.filter((item: any) => !e.includes(item));
 		setArrChoise(imgChoiseTem)
+	}
+
+	const closeChoise = () => {
+		setChoise(false),
+		setArrChoise([])
 	}
 
 	useEffect(() => {
@@ -62,7 +67,7 @@ const SelectOutput = ({ navigation, route }: any) => {
 	useEffect(() => {
 		const getImage = async () => {
 			const base64 = await FileSystem.readAsStringAsync(route.params.route.params.result.assets[0].uri, { encoding: 'base64' });
-			const picture = ["style 2", "style 4"]
+			const picture = ["style 2", "style 4"]    
 			if (base64 != undefined) {
 				picture.map((e: any, i: any) => {
 					const featch = async () => {
@@ -144,28 +149,39 @@ const SelectOutput = ({ navigation, route }: any) => {
 		getImage()
 	}, [theme])
 
-	useEffect(() => {
-		const unsubscribe = interstitial.addAdEventListener(AdEventType.LOADED, () => {
-			setLoaded(true);
-			interstitial.show();
-		});
-		interstitial.load();
-		return unsubscribe;
-	}, []);
+	// useEffect(() => {
+	// 	const unsubscribe = interstitial.addAdEventListener(AdEventType.LOADED, () => {
+	// 		setLoaded(true);
+	// 		interstitial.show();
+	// 	});
+	// 	interstitial.load();
+	// 	return unsubscribe;
+	// }, []);
 
-	if (!loaded) {
-		return null;
-	}
+	// if (!loaded) {
+	// 	return null;
+	// }
 
 	return (
 		<View style={styles().screen} >
 			<View style={styles().container}>
 				<View style={{ flexDirection: "row", marginTop: 50, justifyContent: "space-between" }}>
-					<AntDesign name="left" size={18} color="black" style={{ marginTop: 4 }} onPress={() => navigation.pop()} />
-					<Text style={{ flexGrow: 1, paddingLeft: 20, fontWeight: "500", fontSize: 16 }}>Select output</Text>
-					<TouchableOpacity onPress={() => Sharing.shareAsync("http://khoahocphattrien.vn/Images/Uploaded/Share/2016/12/20/Nhung-buc-anh-dep-nhat-2016-chia-se-tren-Flickr_4.jpg")}>
-						<Image source={require("../../asset/img/iconShare.png")} style={{ width: 20, height: 20 }} />
-					</TouchableOpacity> 
+					{
+						choise === false ?
+							<>
+								<AntDesign name="left" size={18} color="black" style={{ marginTop: 4 }} onPress={() => navigation.pop()} />
+								<Text style={{ flexGrow: 1, paddingLeft: 20, fontWeight: "500", fontSize: 16 }}>Select output</Text>
+								<TouchableOpacity onPress={() => Sharing.shareAsync("http://khoahocphattrien.vn/Images/Uploaded/Share/2016/12/20/Nhung-buc-anh-dep-nhat-2016-chia-se-tren-Flickr_4.jpg")}>
+									<Image source={require("../../asset/img/iconShare.png")} style={{ width: 20, height: 20 }} />
+								</TouchableOpacity>
+							</> : <>
+								<TouchableOpacity onPress={closeChoise} style={{ width: 20, height: 20, justifyContent:'flex-end' }}>
+									<Image source={require("../../asset/img/iconClose.png")} style={{ width: 16, height: 16 }} />
+								</TouchableOpacity>
+								<Text style={{ flexGrow: 1, paddingLeft: 20, fontWeight: "500", fontSize: 16 }}>Select {arrChoise.length} photo</Text>
+								<Text>Select All</Text>
+							</>
+					}
 				</View>
 				<Text style={{ fontWeight: "400", fontSize: 14, color: "#858585", marginTop: 10 }}>Choose one output to finalize and save</Text>
 				<Image source={{ uri: imageRender[0] }} style={{ width: 195, height: 230, marginTop: 30, alignSelf: "center" }} />
