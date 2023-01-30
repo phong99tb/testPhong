@@ -53,10 +53,11 @@ const SelectOutput = ({ navigation, route }: any) => {
 	useEffect(() => {
 		const getImage = async () => {
 			try {
-				const result = await axios.get(`https://zilni.com/aidata/intelAnime.json`)
-				const array = Object.values(result.data);
-				setTheme(array)
-				imageRender.length = array.length
+				const result = await axios.get(`https://zilni.com/aidata/intelAnime1.json`)
+				console.log("---getItem---",result.data);
+				// const array = Object.values(result.data);
+				// setTheme(array)
+				// imageRender.length = array.length
 			} catch (error) {
 				console.log(error);
 			}
@@ -64,90 +65,92 @@ const SelectOutput = ({ navigation, route }: any) => {
 		getImage()
 	}, [])
 
-	useEffect(() => {
-		const getImage = async () => {
-			const base64 = await FileSystem.readAsStringAsync(route.params.route.params.result.assets[0].uri, { encoding: 'base64' });
-			const picture = ["style 2", "style 4"]    
-			if (base64 != undefined) {
-				picture.map((e: any, i: any) => {
-					const featch = async () => {
-						try {
-							const themeTem = {
-								data: ["data:image/jpeg;base64," + base64, e],
-								cleared: false,
-								example_id: null,
-								session_hash: "9nd2e3159dc"
-							}
-							const result = await axios.post(`https://adpro-informative09.hf.space/api/predict/`, JSON.stringify(themeTem), {
-								headers: {
-									'content-type': 'application/json'
-								}
-							})
-							var imageTemp = imageRender
-							imageTemp[i] = result.data.data[0]
-							setImageRender(imageTemp)
-							var imageTemp1 = [...imageTemp]
-							setImageRender(imageTemp1)
-							console.log(imageTemp);
-						} catch (error) {
-							console.log(error);
-						}
-					}
-					featch()
-				})
-				if (theme.length != 0) {
-					axios.all(theme.map((e: string, index: any) => {
-						const featch1 = async () => {
-							try {
-								var text = ""
-								var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-								for (var i = 0; i < 11; i++) {
-									text += possible.charAt(Math.floor(Math.random() * possible.length));
-								}
-								if (text.length != 0) {
-									const themeTem =
-									{
-										"fn_index": 1,
-										"data": [
-											"data:image/jpeg;base64," + base64,
-											e,
-											20,
-											0.75,
-											Math.floor(Math.random() * (10000000000 - 1000000000)) + 10000000000,
-											7.5,
-											"submit_by_human"
-										],
-										"session_hash": text
-									}
-									const result = await axios.post(`https://intel-stable-diffusion.hf.space/run/predict/`, themeTem, {
-										headers: {
-											'content-type': 'application/json'
-										}
-									})
-									var imageTemp = imageRender
-									imageTemp[index + 2] = result.data.data[0]
-									setImageRender(imageTemp)
-									console.log(imageTemp);
-									if (result.data.data[0] == imageDark) {
-										featch1()
-									}
-									if (result.data.data[0] != imageDark) {
-										var imageTemp1 = [...imageRender]
-										setImageRender(imageTemp1)
-									}
-								}
-							} catch (error) {
-								console.log(error);
-								featch1()
-							}
-						}
-						featch1()
-					}))
-				}
-			}
-		}
-		getImage()
-	}, [theme])
+	// useEffect(() => {
+	// 	const getImage = async () => {
+	// 		const base64 = await FileSystem.readAsStringAsync(route.params.route.params.result.assets[0].uri, { encoding: 'base64' });
+	// 		const picture = ["style 2", "style 4"]    
+	// 		if (base64 != undefined) {
+	// 			picture.map((e: any, i: any) => {
+	// 				const featch = async () => {
+	// 					try {
+	// 						const themeTem = {
+	// 							data: ["data:image/jpeg;base64," + base64, e],
+	// 							cleared: false,
+	// 							example_id: null,
+	// 							session_hash: "9nd2e3159dc"
+	// 						}
+	// 						const result = await axios.post(`https://adpro-informative09.hf.space/api/predict/`, JSON.stringify(themeTem), {
+	// 							headers: {
+	// 								'content-type': 'application/json'
+	// 							}
+	// 						})
+	// 						var imageTemp = imageRender
+	// 						imageTemp[i] = result.data.data[0]
+	// 						setImageRender(imageTemp)
+	// 						var imageTemp1 = [...imageTemp]
+	// 						setImageRender(imageTemp1)
+	// 						// console.log(imageTemp);
+	// 					} catch (error) {
+	// 						console.log(error);
+	// 					}
+	// 				}
+	// 				featch()
+	// 			})
+	// 			if (theme.length != 0) {
+	// 				axios.all(theme.map((e: string, index: any) => {
+	// 					const featch1 = async () => {
+	// 						try {
+	// 							var text = ""
+	// 							var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	// 							for (var i = 0; i < 11; i++) {
+	// 								text += possible.charAt(Math.floor(Math.random() * possible.length));
+	// 							}
+	// 							if (text.length != 0) {
+	// 								const themeTem =
+	// 								{
+	// 									"fn_index": 1,
+	// 									"data": [
+	// 										"data:image/jpeg;base64," + base64,
+	// 										e,
+	// 										20,
+	// 										0.75,
+	// 										Math.floor(Math.random() * (10000000000 - 1000000000)) + 10000000000,
+	// 										7.5,
+	// 										"submit_by_human"
+	// 									],
+	// 									"session_hash": text
+	// 								}
+	// 								const result = await axios.post(`https://intel-stable-diffusion.hf.space/run/predict/`, themeTem, {
+	// 									headers: {
+	// 										'content-type': 'application/json'
+	// 									}
+	// 								})
+	// 								var imageTemp = imageRender
+	// 								imageTemp[index + 2] = result.data.data[0]
+	// 								setImageRender(imageTemp)
+	// 								// console.log(imageTemp);
+	// 								if (result.data.data[0] == imageDark) {
+	// 									featch1()
+	// 								}
+	// 								if (result.data.data[0] != imageDark) {
+	// 									var imageTemp1 = [...imageRender]
+	// 									setImageRender(imageTemp1)
+	// 								}
+	// 							}
+	// 						} catch (error) {
+	// 							console.log(error);
+	// 							featch1()
+	// 						}
+	// 					}
+	// 					featch1()
+	// 				}))
+	// 			}
+	// 		}
+	// 		console.log(theme);
+			
+	// 	}
+	// 	getImage()
+	// }, [theme])
 
 	// useEffect(() => {
 	// 	const unsubscribe = interstitial.addAdEventListener(AdEventType.LOADED, () => {
