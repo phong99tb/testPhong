@@ -6,14 +6,17 @@ import SelectPhotoScreen from './src/screen/app/SelectPhotoScreen';
 import HomeScreen from './src/screen/app/HomeScreen';
 import StackHome from './src/screen/setting/StackHome';
 import 'expo-dev-client';
+import { NativeBaseProvider } from 'native-base';
 
 const Stack = createNativeStackNavigator();
 
 function App() {
 	return (
-		<NavigationContainer>
-			<StackHome />
-		</NavigationContainer>
+		<NativeBaseProvider>
+			<NavigationContainer>
+				<StackHome />
+			</NavigationContainer>
+		</NativeBaseProvider>
 	);
 }
 
