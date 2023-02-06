@@ -5,13 +5,14 @@ import { AntDesign } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 import axios from 'axios';
 import { imageDark } from '../../asset/variable';
-import { BannerAd, BannerAdSize, InterstitialAd } from 'react-native-google-mobile-ads';
+import { BannerAd, BannerAdSize, InterstitialAd, AdEventType } from 'react-native-google-mobile-ads';
 import * as Sharing from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
 import { Box, useToast } from 'native-base';
-import { shareAsync } from "expo-sharing";
-
-
+import Toast from '../../component/Toast';
+import { useSelector } from 'react-redux';
+import { useNetInfo } from '@react-native-community/netinfo';
+import DisconnectWifi from '../../component/DisconnectWifi';
 
 const SelectOutput = ({ navigation, route }: any) => {
 	const [imageRender, setImageRender] = useState<any>([]);
@@ -19,12 +20,11 @@ const SelectOutput = ({ navigation, route }: any) => {
 	const [loaded, setLoaded] = useState(false);
 	const [choise, setChoise] = useState(false);
 	const [arrChoise, setArrChoise] = useState<any>([]);
+	const dataState: any = useSelector(state => state)
 	const toast = useToast()
 
-	const adUnitId = "ca-app-pub-6635131293357908/9331385561";
-	// const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-6635131293357908/9331385561';
-	// const adUnitIdInter = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
-	const adUnitIdInter = "ca-app-pub-6635131293357908/3131474531";
+	const adUnitId = "ca-app-pub-1885745425234581/8620012420";
+	const adUnitIdInter = "ca-app-pub-1885745425234581/7421916175";
 
 	const interstitial = InterstitialAd.createForAdRequest(adUnitIdInter, {
 		requestNonPersonalizedAdsOnly: true,
@@ -132,6 +132,39 @@ const SelectOutput = ({ navigation, route }: any) => {
 		}
 	}
 
+	const downImage = async () => {
+		try {
+			const { status } = await MediaLibrary.requestPermissionsAsync();
+			if (status === "granted") {
+				const data = imageRender[0]
+				const base64Code = data.split("data:image/png;base64,")[1];
+
+				const filename = FileSystem.documentDirectory + "some_unique_file_name.png";
+				await FileSystem.writeAsStringAsync(filename, base64Code, {
+					encoding: FileSystem.EncodingType.Base64,
+				});
+				const mediaResult = await MediaLibrary.saveToLibraryAsync(filename);
+			}
+			toast.show({
+				render: () => {
+					return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+						Download Success
+					</Box>;
+				}
+			})
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	const selectAll = () => {
+		if (arrChoise.length != imageRender.length) {
+			setArrChoise(imageRender)
+		} else {
+			setArrChoise([])
+		}
+	}
+
 	useEffect(() => {
 		const getImage = async () => {
 			try {
@@ -163,7 +196,7 @@ const SelectOutput = ({ navigation, route }: any) => {
 								example_id: null,
 								session_hash: "9nd2e3159dc"
 							}
-							const result = await axios.post(`https://adpro-informative09.hf.space/api/predict/`, JSON.stringify(themeTem), {
+							const result = await axios.post(`https://adpro-informative` + dataState.random + `.hf.space/api/predict/`, JSON.stringify(themeTem), {
 								headers: {
 									'content-type': 'application/json'
 								}
@@ -173,7 +206,6 @@ const SelectOutput = ({ navigation, route }: any) => {
 							setImageRender(imageTemp)
 							var imageTemp1 = [...imageTemp]
 							setImageRender(imageTemp1)
-							// console.log(imageTemp);
 						} catch (error) {
 							console.log(error);
 						}
@@ -242,19 +274,24 @@ const SelectOutput = ({ navigation, route }: any) => {
 	// 	return null;
 	// }
 
+	if (dataState.disconnect == false) {
+		return (
+			<DisconnectWifi/>
+		)
+	}
 	return (
 		<View style={styles().screen} >
 			<View style={styles().container}>
-				<View style={{ flexDirection: "row", marginTop: 50, justifyContent: "space-between" }}>
+				<View style={styles().head}>
 					{
 						choise === false ?
 							<>
 								<AntDesign name="left" size={18} color="black" style={{ marginTop: 4 }} onPress={() => navigation.pop()} />
-								<Text style={{ flexGrow: 1, paddingLeft: 20, fontWeight: "500", fontSize: 16 }}>Select output</Text>
+								<Text style={styles().title}>Select output</Text>
 								<View style={{ flexDirection: "row" }}>
-									<TouchableOpacity style={{ marginRight: 20 }} onPress={shareImage} >
+									{/* <TouchableOpacity style={{ marginRight: 20 }} onPress={shareImage} >
 										<Image source={require("../../asset/img/iconShare.png")} style={{ width: 20, height: 20 }} />
-									</TouchableOpacity>
+									</TouchableOpacity> */}
 									<TouchableOpacity onPress={() => setChoise(true)} >
 										<Image source={require("../../asset/img/iconEdit.png")} style={{ width: 20, height: 20 }} />
 									</TouchableOpacity>
@@ -263,14 +300,39 @@ const SelectOutput = ({ navigation, route }: any) => {
 								<TouchableOpacity onPress={closeChoise} style={{ width: 20, height: 20, justifyContent: 'flex-end' }}>
 									<Image source={require("../../asset/img/iconClose.png")} style={{ width: 16, height: 16 }} />
 								</TouchableOpacity>
-								<Text style={{ flexGrow: 1, paddingLeft: 20, fontWeight: "500", fontSize: 16 }}>Select {arrChoise.length} photo</Text>
-								<Text>Select All</Text>
+								<Text style={styles().title}>Select {arrChoise.length} photo</Text>
+								<Text onPress={selectAll}>Select All</Text>
 							</>
 					}
 				</View>
-				<Text style={{ fontWeight: "400", fontSize: 14, color: "#858585", marginTop: 10 }}>Choose one output to finalize and save</Text>
-				<Image source={{ uri: imageRender[0] }} style={{ width: 195, height: 230, marginTop: 30, alignSelf: "center" }} />
-				<View>
+				<Text style={styles().text}>Choose one output to finalize and save</Text>
+				{
+					choise === false ?
+						<View style={styles().viewImage}>
+							<Image resizeMode='contain' source={{ uri: imageRender[0] }} style={styles().imageShow} />
+							<View style={styles().viewDbBtImage}>
+								<TouchableOpacity style={styles().viewBtImage} onPress={shareImage}>
+									<Image style={styles().buttonImage} source={require("../../asset/img/iconShareWhite.png")} />
+								</TouchableOpacity>
+								<TouchableOpacity style={styles().viewBtImage} onPress={downImage}>
+									<Image style={styles().buttonImage} source={require("../../asset/img/iconDownloadWhite.png")} />
+								</TouchableOpacity>
+							</View>
+						</View> : arrChoise.includes(imageRender[0]) !== true ?
+							<View style={styles().viewImage}>
+								<TouchableOpacity onPress={() => choiseImg(imageRender[0])} >
+									<Image resizeMode='contain' source={{ uri: imageRender[0] }} style={styles().imageShow} />
+									<Image source={require('../../asset/img/iconNoChoise.png')} style={styles().imgChoise} />
+								</TouchableOpacity>
+							</View> :
+							<View style={styles().viewImage}>
+								<TouchableOpacity onPress={() => noChoiseImg(imageRender[0])} >
+									<Image resizeMode='contain' source={{ uri: imageRender[0] }} style={styles().imageShow} />
+									<Image source={require('../../asset/img/iconChoise.png')} style={styles().imgChoise} />
+								</TouchableOpacity>
+							</View>
+				}
+				<View >
 					<ScrollView horizontal showsHorizontalScrollIndicator={false}>
 						{
 							imageRender?.map((e: any, i: any) => {
@@ -281,19 +343,19 @@ const SelectOutput = ({ navigation, route }: any) => {
 												arrChoise.includes(e) !== true ?
 													<>
 														<TouchableOpacity key={e} style={styles().imgTouchableLarge} onPress={() => choiseImg(e)} onLongPress={() => setChoise(true)} >
-															<Image source={{ uri: e }} style={styles().imgLarge} />
+															<Image resizeMode='contain' source={{ uri: e }} style={styles().imgLarge} />
 															<Image source={require('../../asset/img/iconNoChoise.png')} style={styles().imgChoise} />
 														</TouchableOpacity>
 													</> :
 													<>
 														<TouchableOpacity key={e} style={styles().imgTouchableLarge} onPress={() => noChoiseImg(e)} onLongPress={() => setChoise(true)} >
-															<Image source={{ uri: e }} style={styles().imgLarge} />
+															<Image resizeMode='contain' source={{ uri: e }} style={styles().imgLarge} />
 															<Image source={require('../../asset/img/iconChoise.png')} style={styles().imgChoise} />
 														</TouchableOpacity>
 													</>
 												:
 												<TouchableOpacity key={e} style={styles().imgTouchableLarge} onPress={() => changePossion(i)} onLongPress={() => choiseImg(e)} >
-													<Image source={{ uri: e }} style={styles().imgLarge} />
+													<Image resizeMode='contain' source={{ uri: e }} style={styles().imgLarge} />
 												</TouchableOpacity>
 								)
 							})
@@ -302,20 +364,17 @@ const SelectOutput = ({ navigation, route }: any) => {
 				</View>
 				{
 					choise === false ?
-						<View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 20 }}>
-							<TouchableOpacity onPress={() => navigation.navigate('Home')} style={{ width: "45%", height: 50, borderRadius: 9, alignItems: "center", justifyContent: "center", borderColor: "#3787EB", borderWidth: 1 }}>
+						<View style={styles().viewDoubleBt}>
+							<TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles().buttonLeft}>
 								<Text style={{ color: "#3787EB" }}>Create new photo</Text>
 							</TouchableOpacity>
-							<TouchableOpacity onPress={downloadAll} style={{ width: "45%", alignItems: "center", justifyContent: "center", backgroundColor: "#3787EB", height: 50, borderRadius: 9 }}>
+							<TouchableOpacity onPress={downloadAll} style={styles().buttonRight}>
 								<Text style={{ color: "white" }}>Download all</Text>
 							</TouchableOpacity>
 						</View>
 						:
-						<View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 20 }}>
-							<TouchableOpacity onPress={() => navigation.navigate('Home')} style={{ width: "45%", height: 50, borderRadius: 9, alignItems: "center", justifyContent: "center", borderColor: "#3787EB", borderWidth: 1 }}>
-								<Text style={{ color: "#3787EB" }}>Share</Text>
-							</TouchableOpacity>
-							<TouchableOpacity onPress={downloadSelect} style={{ width: "45%", alignItems: "center", justifyContent: "center", backgroundColor: "#3787EB", height: 50, borderRadius: 9 }}>
+						<View style={styles().viewChoise}>
+							<TouchableOpacity onPress={downloadSelect} style={styles().buttonRight}>
 								<Text style={{ color: "white" }}>Download</Text>
 							</TouchableOpacity>
 						</View>

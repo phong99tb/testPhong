@@ -1,6 +1,6 @@
 {
 	"expo": {
-		"name": "testDrawn2",
+		"name": "Aniaga AI",
 		"slug": "testDrawn2",
 		"version": "1.0.0",
 		"orientation": "portrait",
@@ -35,7 +35,8 @@
 				"android.permission.WRITE_EXTERNAL_STORAGE",
 				"android.permission.ACCESS_MEDIA_LOCATION"
 			],
-			"package": "com.popenguyen.testDrawn2"
+			"package": "ai.art.drawing.anime.animanga",
+			"versionCode": 1
 		},
 		"web": {
 			"favicon": "./assets/favicon.png"
@@ -63,6 +64,6 @@
 		}
 	},
 	"react-native-google-mobile-ads": {
-		"android_app_id": "ca-app-pub-6635131293357908~8225407200"
+		"android_app_id": "ca-app-pub-1885745425234581~2912390177"
 	}
 }

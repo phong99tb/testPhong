@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native"
+import { StatusBar, StyleSheet } from "react-native"
 
 const styles = () => {
     const css = StyleSheet.create({
@@ -76,6 +76,80 @@ const styles = () => {
         },
         viewTwoButton: {
             
+        },
+        viewBtImage:{
+            width: 36,
+            height: 36,
+            backgroundColor:"rgba(90, 90, 90, 0.31)",
+            borderRadius: 1000,
+            alignItems:"center",
+            justifyContent:"center"
+        },
+        buttonImage:{
+            width: 20,
+            height: 20
+        },
+        viewDbBtImage: {
+            position:"absolute",
+            bottom: 8,
+            right: 8,
+            height: 78,
+            justifyContent:"space-between"
+        },
+        title:{
+            flexGrow: 1, 
+            paddingLeft: 20, 
+            fontWeight: "500", 
+            fontSize: 16
+        },
+        head: {
+            flexDirection: "row", 
+            marginTop: StatusBar.currentHeight, 
+            justifyContent: "space-between"
+        },
+        text: {
+            fontWeight: "400", 
+            fontSize: 14, 
+            color: "#858585", 
+            marginTop: 10
+        },
+        viewImage: {
+            width: 195, 
+            height: 230, 
+            alignSelf: "center", 
+            marginTop: 30
+        },
+        imageShow: {
+            width: 195,
+            height: 230, 
+            alignSelf: "center"
+        },
+        viewDoubleBt: {
+            flexDirection: "row", 
+            justifyContent: "space-between", 
+            marginTop: 20
+        },
+        buttonLeft: {
+            width: "45%", 
+            height: 50, 
+            borderRadius: 9, 
+            alignItems: "center", 
+            justifyContent: "center", 
+            borderColor: "#3787EB", 
+            borderWidth: 1
+        },
+        buttonRight: {
+            width: "45%", 
+            alignItems: "center", 
+            justifyContent: "center", 
+            backgroundColor: "#3787EB", 
+            height: 50, 
+            borderRadius: 9
+        },
+        viewChoise: {
+            alignItems: "center", 
+            width: "100%", 
+            marginTop: 20
         }
         
     })
