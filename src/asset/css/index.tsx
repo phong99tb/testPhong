@@ -1,4 +1,7 @@
-import { StatusBar, StyleSheet } from "react-native"
+import { StatusBar, StyleSheet, Dimensions } from "react-native"
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 const styles = () => {
     const css = StyleSheet.create({
@@ -105,7 +108,8 @@ const styles = () => {
         head: {
             flexDirection: "row", 
             marginTop: StatusBar.currentHeight, 
-            justifyContent: "space-between"
+            justifyContent: "space-between",
+            paddingTop: 10
         },
         text: {
             fontWeight: "400", 
@@ -114,15 +118,16 @@ const styles = () => {
             marginTop: 10
         },
         viewImage: {
-            width: 195, 
-            height: 230, 
+            width: windowWidth*0.6, 
+            height: windowWidth*0.5, 
             alignSelf: "center", 
-            marginTop: 30
+            marginTop: 10
         },
         imageShow: {
-            width: 195,
-            height: 230, 
-            alignSelf: "center"
+            width: "100%",
+            height: "100%", 
+            alignSelf: "center",
+            // backgroundColor:"black"
         },
         viewDoubleBt: {
             flexDirection: "row", 
@@ -130,7 +135,7 @@ const styles = () => {
             marginTop: 20
         },
         buttonLeft: {
-            width: "45%", 
+            width: "48%", 
             height: 50, 
             borderRadius: 9, 
             alignItems: "center", 
@@ -139,7 +144,7 @@ const styles = () => {
             borderWidth: 1
         },
         buttonRight: {
-            width: "45%", 
+            width: "48%", 
             alignItems: "center", 
             justifyContent: "center", 
             backgroundColor: "#3787EB", 

@@ -5,13 +5,11 @@ import { AntDesign } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 import axios from 'axios';
 import { imageDark } from '../../asset/variable';
-import { BannerAd, BannerAdSize, InterstitialAd, AdEventType } from 'react-native-google-mobile-ads';
+import { BannerAd, BannerAdSize, InterstitialAd, AdEventType, TestIds, useInterstitialAd } from 'react-native-google-mobile-ads';
 import * as Sharing from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
 import { Box, useToast } from 'native-base';
-import Toast from '../../component/Toast';
 import { useSelector } from 'react-redux';
-import { useNetInfo } from '@react-native-community/netinfo';
 import DisconnectWifi from '../../component/DisconnectWifi';
 
 const SelectOutput = ({ navigation, route }: any) => {
@@ -22,6 +20,7 @@ const SelectOutput = ({ navigation, route }: any) => {
 	const [arrChoise, setArrChoise] = useState<any>([]);
 	const dataState: any = useSelector(state => state)
 	const toast = useToast()
+	const id = "test-toast";
 
 	const adUnitId = "ca-app-pub-1885745425234581/8620012420";
 	const adUnitIdInter = "ca-app-pub-1885745425234581/7421916175";
@@ -56,59 +55,77 @@ const SelectOutput = ({ navigation, route }: any) => {
 	}
 
 	const downloadAll = () => {
-		imageRender.map(async (e: any) => {
-			try {
-				const { status } = await MediaLibrary.requestPermissionsAsync();
-				if (status === "granted") {
-					const data = e
-					const base64Code = data.split("data:image/png;base64,")[1];
+		imageRender.map((e: any, index: any) => {
+			const runTask = async () => {
+				try {
+					const { status } = await MediaLibrary.requestPermissionsAsync();
+					if (status === "granted") {
+						const data = e
+						const base64Code = data.split("data:image/png;base64,")[1];
 
-					const filename = FileSystem.documentDirectory + "some_unique_file_name.png";
-					await FileSystem.writeAsStringAsync(filename, base64Code, {
-						encoding: FileSystem.EncodingType.Base64,
-					});
+						const filename = FileSystem.documentDirectory + "some_unique_file_name.png";
+						await FileSystem.writeAsStringAsync(filename, base64Code, {
+							encoding: FileSystem.EncodingType.Base64,
+						});
 
-					const mediaResult = await MediaLibrary.saveToLibraryAsync(filename);
+						const mediaResult = await MediaLibrary.saveToLibraryAsync(filename);
+						console.log(index)
+					}
+				} catch (error) {
+					console.log(error);
+					runTask()
 				}
-			} catch (error) {
-				console.log(error);
 			}
+			runTask()
 		})
-		toast.show({
-			render: () => {
-				return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-					Download success
-				</Box>;
-			}
-		});
+		if (!toast.isActive(id)) {
+			toast.show({
+				id,
+				duration: 1000,
+				render: () => {
+					return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+						Download Success
+					</Box>;
+				}
+			})
+		}
 	}
 
 	const downloadSelect = () => {
-		arrChoise.map(async (e: any) => {
-			try {
-				const { status } = await MediaLibrary.requestPermissionsAsync();
-				if (status === "granted") {
-					const data = e
-					const base64Code = data.split("data:image/png;base64,")[1];
+		arrChoise.map((e: any) => {
+			const runTask = async () => {
+				try {
+					const { status } = await MediaLibrary.requestPermissionsAsync();
+					if (status === "granted") {
+						const data = e
+						const base64Code = data.split("data:image/png;base64,")[1];
 
-					const filename = FileSystem.documentDirectory + "some_unique_file_name.png";
-					await FileSystem.writeAsStringAsync(filename, base64Code, {
-						encoding: FileSystem.EncodingType.Base64,
-					});
+						const filename = FileSystem.documentDirectory + "some_unique_file_name.png";
+						await FileSystem.writeAsStringAsync(filename, base64Code, {
+							encoding: FileSystem.EncodingType.Base64,
+						});
 
-					const mediaResult = await MediaLibrary.saveToLibraryAsync(filename);
+						const mediaResult = await MediaLibrary.saveToLibraryAsync(filename);
+					}
+				} catch (error) {
+					console.log(error);
+					runTask()
 				}
-			} catch (error) {
-				console.log(error);
 			}
+			runTask()
 		})
-		toast.show({
-			render: () => {
-				return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-					Download success
-				</Box>;
-			}
-		});
+		const id = "test-toast";
+		if (!toast.isActive(id)) {
+			toast.show({
+				id,
+				duration: 1000,
+				render: () => {
+					return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+						Download Success
+					</Box>;
+				}
+			})
+		}
 	}
 
 	const shareImage = async () => {
@@ -129,6 +146,7 @@ const SelectOutput = ({ navigation, route }: any) => {
 			}
 		} catch (error) {
 			console.log(error);
+			shareImage()
 		}
 	}
 
@@ -143,17 +161,24 @@ const SelectOutput = ({ navigation, route }: any) => {
 				await FileSystem.writeAsStringAsync(filename, base64Code, {
 					encoding: FileSystem.EncodingType.Base64,
 				});
+
 				const mediaResult = await MediaLibrary.saveToLibraryAsync(filename);
+				console.log(mediaResult)
 			}
-			toast.show({
-				render: () => {
-					return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
-						Download Success
-					</Box>;
-				}
-			})
+			const id = "test-toast";
+			if (!toast.isActive(id)) {
+				toast.show({
+					id,
+					duration: 1000,
+					render: () => {
+						return <Box bg="emerald.500" px="2" py="1" rounded="sm" mb={5}>
+							Download Success
+						</Box>;
+					}
+				})
+			}
 		} catch (error) {
-			console.log(error);
+			downImage()
 		}
 	}
 
@@ -180,6 +205,7 @@ const SelectOutput = ({ navigation, route }: any) => {
 			}
 		}
 		getImage()
+		const myTimeout = setTimeout(() => setLoaded(true), 3000);
 	}, [])
 
 	useEffect(() => {
@@ -261,22 +287,23 @@ const SelectOutput = ({ navigation, route }: any) => {
 		getImage()
 	}, [theme])
 
-	// useEffect(() => {
-	// 	const unsubscribe = interstitial.addAdEventListener(AdEventType.LOADED, () => {
-	// 		setLoaded(true);
-	// 		interstitial.show();
-	// 	});
-	// 	interstitial.load();
-	// 	return unsubscribe;
-	// }, []);
+	useEffect(() => {
+		const unsubscribe = interstitial.addAdEventListener(AdEventType.LOADED, () => {
+			setLoaded(true);
+			interstitial.show();
+		});
+		interstitial.load();
+		console.log(interstitial.load())
+		return unsubscribe;
+	}, []);
 
-	// if (!loaded) {
-	// 	return null;
-	// }
+	if (!loaded) {
+		return null;
+	}
 
 	if (dataState.disconnect == false) {
 		return (
-			<DisconnectWifi/>
+			<DisconnectWifi />
 		)
 	}
 	return (
@@ -292,9 +319,13 @@ const SelectOutput = ({ navigation, route }: any) => {
 									{/* <TouchableOpacity style={{ marginRight: 20 }} onPress={shareImage} >
 										<Image source={require("../../asset/img/iconShare.png")} style={{ width: 20, height: 20 }} />
 									</TouchableOpacity> */}
-									<TouchableOpacity onPress={() => setChoise(true)} >
-										<Image source={require("../../asset/img/iconEdit.png")} style={{ width: 20, height: 20 }} />
-									</TouchableOpacity>
+									{
+										imageRender.some((e: any) => e !== undefined) === true ?
+											<TouchableOpacity onPress={() => setChoise(true)} >
+												<Image source={require("../../asset/img/iconEdit.png")} style={{ width: 20, height: 20 }} />
+											</TouchableOpacity> :
+											<></>
+									}
 								</View>
 							</> : <>
 								<TouchableOpacity onPress={closeChoise} style={{ width: 20, height: 20, justifyContent: 'flex-end' }}>
@@ -308,17 +339,18 @@ const SelectOutput = ({ navigation, route }: any) => {
 				<Text style={styles().text}>Choose one output to finalize and save</Text>
 				{
 					choise === false ?
-						<View style={styles().viewImage}>
-							<Image resizeMode='contain' source={{ uri: imageRender[0] }} style={styles().imageShow} />
-							<View style={styles().viewDbBtImage}>
-								<TouchableOpacity style={styles().viewBtImage} onPress={shareImage}>
-									<Image style={styles().buttonImage} source={require("../../asset/img/iconShareWhite.png")} />
-								</TouchableOpacity>
-								<TouchableOpacity style={styles().viewBtImage} onPress={downImage}>
-									<Image style={styles().buttonImage} source={require("../../asset/img/iconDownloadWhite.png")} />
-								</TouchableOpacity>
-							</View>
-						</View> : arrChoise.includes(imageRender[0]) !== true ?
+						imageRender[0] === undefined ? <ActivityIndicator size="large" style={styles().viewImage} /> :
+							<View style={styles().viewImage}>
+								<Image resizeMode='contain' source={{ uri: imageRender[0] }} style={styles().imageShow} />
+								<View style={styles().viewDbBtImage}>
+									<TouchableOpacity style={styles().viewBtImage} onPress={shareImage}>
+										<Image style={styles().buttonImage} source={require("../../asset/img/iconShareWhite.png")} />
+									</TouchableOpacity>
+									<TouchableOpacity style={styles().viewBtImage} onPress={downImage}>
+										<Image style={styles().buttonImage} source={require("../../asset/img/iconDownloadWhite.png")} />
+									</TouchableOpacity>
+								</View>
+							</View> : arrChoise.includes(imageRender[0]) !== true ?
 							<View style={styles().viewImage}>
 								<TouchableOpacity onPress={() => choiseImg(imageRender[0])} >
 									<Image resizeMode='contain' source={{ uri: imageRender[0] }} style={styles().imageShow} />
@@ -368,9 +400,15 @@ const SelectOutput = ({ navigation, route }: any) => {
 							<TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles().buttonLeft}>
 								<Text style={{ color: "#3787EB" }}>Create new photo</Text>
 							</TouchableOpacity>
-							<TouchableOpacity onPress={downloadAll} style={styles().buttonRight}>
-								<Text style={{ color: "white" }}>Download all</Text>
-							</TouchableOpacity>
+							{
+								imageRender.includes(undefined) === true ?
+									<View style={styles().buttonRight}>
+										<Text style={{ color: "white" }}>Download all</Text>
+									</View> :
+									<TouchableOpacity onPress={downloadAll} style={styles().buttonRight}>
+										<Text style={{ color: "white" }}>Download all</Text>
+									</TouchableOpacity>
+							}
 						</View>
 						:
 						<View style={styles().viewChoise}>
